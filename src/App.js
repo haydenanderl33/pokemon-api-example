@@ -1,26 +1,46 @@
 import React from 'react';
-import logo from './logo.svg';
+import axios from 'axios';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      inputText: '',
+      cards: []
+    };
+  }
+
+  handleChange = (e) => {
+    // console.dir(e.target.value);
+    this.setState({ inputText: e.target.value })
+  }
+
+  handleClick = () => {
+    const { inputText } = this.state;
+    axios
+      .get(`/api/cards?pokemonName=${inputText}`)
+      .then(response => this.setState({ cards: response.data }))
+      .catch(err => console.log(err));
+  }
+
+  render() {
+    const map = this.state.cards.map(card => (
+      <img src={card.imageUrl} />
+    ));
+
+    return (
+      <div>
+        <h1>Pokemon API!</h1>
+        <input
+          placeholder="Find Pokemon Cards"
+          onChange={this.handleChange}
+        />
+        <button onClick={this.handleClick}>Find Card</button>
+        {map}
+      </div>
+    )
+  }
 }
 
 export default App;
